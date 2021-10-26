@@ -27,6 +27,7 @@ module.exports = {
           password: "123",
           createdAt: new Date(),
           updatedAt: new Date(),
+          admin: false,
         },
       ],
       {}
