@@ -1,0 +1,19 @@
+{
+  "development": {
+    "url": "postgres://brdasilo:v9UQVGG77NZ7t303F5poLbDyQ-OAw3Px@hattie.db.elephantsql.com/brdasilo"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
