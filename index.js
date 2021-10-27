@@ -1,56 +1,35 @@
 const express = require("express");
 const PORT = 4002;
-const User = require("./models").user;
+const userRouter = require("./routers/user");
+const testRouter = require("./routers/anotherRouter");
 
+// Create a new express app => new server.
 const app = express();
 
+const loggingMiddleware = (req, res, next) => {
+  console.log("I got a request");
+  console.log("the request type is", req.method);
+
+  //next(); // call the next handler in line, call the route handler
+};
+
+// register some middleware
+// body-parser parsing the body of the request
+// => converts the body of the request => an object
 app.use(express.json());
+app.use(loggingMiddleware); // At app level
 
-app.get("/test", (req, res, next) => {
-  console.log("got the request");
-  res.send("testing...");
+// middleware at ROUTE LEVEL
+app.get("/middleware-test", (req, res, next) => {
+  console.log("in the route");
+
+  res.send("middleware tested successfully");
 });
 
-// Get one user by Id
-app.get("/users/:userId", async (request, response, next) => {
-  try {
-    const userId = request.params.userId;
-    const user = await User.findByPk(userId);
-    response.send(user);
-  } catch (e) {
-    console.log(e.message);
-  }
-});
+// registering the router to the app
+// This are some of your routes.
+app.use("/users", userRouter);
+app.use("/test", testRouter);
 
-// create a new user
-app.post("/users", async (request, response, next) => {
-  try {
-    // name, email, password
-    const { name, email, password } = request.body;
-
-    console.log(request.body);
-
-    if (!email || !name || !password) {
-      response.status(400).send("Missing parameters"); //400 bad request
-    } else {
-      const user = await User.create({
-        name: name,
-        email: email,
-        password: password,
-      });
-
-      response.send({ message: "new user created", newUser: user });
-    }
-  } catch (e) {
-    if (e.response.type === "uniqueContraintError") {
-      res.status(400).send("email already exists");
-    } else {
-      next(e); // Calling express error handler
-    }
-  }
-});
-
-// Update ONE user
-app.patch("/users/:id", () => {});
-
+// start the app
 app.listen(PORT, () => console.log("Listening..."));
