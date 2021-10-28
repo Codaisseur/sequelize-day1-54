@@ -1,6 +1,9 @@
 const { Router } = require("express");
+const bcrypt = require("bcrypt");
 const User = require("../models").user;
 const router = new Router();
+
+const authMiddleware = require("../auth/middleware");
 
 // Create a new user
 router.post("/", async (request, response, next) => {
@@ -13,10 +16,14 @@ router.post("/", async (request, response, next) => {
     if (!email || !name || !password) {
       response.status(400).send("Missing parameters"); //400 bad request
     } else {
+      // one more step in our signup / create user route to encrypt the password.
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      console.log(hashedPassword);
+
       const user = await User.create({
         name: name,
         email: email,
-        password: password,
+        password: hashedPassword,
       });
 
       response.send({ message: "new user created", newUser: user });
@@ -41,7 +48,21 @@ const failRandomly = (req, res, next) => {
 };
 
 // Get a user by id
-router.get("/:userId", failRandomly, async (request, response, next) => {
+router.get("/:userId", authMiddleware, async (req, res, next) => {
+  try {
+    // const userId = request.params.userId;
+    // const user = await User.findByPk(userId);
+    // response.send(user);
+    res.send({
+      message: "Who is calling this endpoint???",
+      name: req.user.name,
+    });
+  } catch (e) {
+    console.log(e.message);
+  }
+});
+
+router.get("/open/:userId", async (request, response, next) => {
   try {
     const userId = request.params.userId;
     const user = await User.findByPk(userId);
