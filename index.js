@@ -2,6 +2,7 @@ const express = require("express");
 const PORT = 4002;
 const userRouter = require("./routers/user");
 const testRouter = require("./routers/anotherRouter");
+const authRouter = require("./routers/auth");
 
 // Create a new express app => new server.
 const app = express();
@@ -17,7 +18,7 @@ const loggingMiddleware = (req, res, next) => {
 // body-parser parsing the body of the request
 // => converts the body of the request => an object
 app.use(express.json());
-app.use(loggingMiddleware); // At app level
+// app.use(loggingMiddleware); // At app level
 
 // middleware at ROUTE LEVEL
 app.get("/middleware-test", (req, res, next) => {
@@ -30,6 +31,7 @@ app.get("/middleware-test", (req, res, next) => {
 // This are some of your routes.
 app.use("/users", userRouter);
 app.use("/test", testRouter);
+app.use("/auth", authRouter);
 
 // start the app
 app.listen(PORT, () => console.log("Listening..."));
